@@ -1,0 +1,4 @@
+{ "agents": [
+  { "id": "main", "role": "총괄", "coordinator": true },
+  { "id": "flora", "role": "예약 꽃다발", "emoji": "💐", "mission": "픽업 주문 관리" }
+] }

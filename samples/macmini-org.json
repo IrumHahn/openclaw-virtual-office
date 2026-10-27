@@ -1,0 +1,25 @@
+{
+  "company": "한이룸 AI 오피스",
+  "owner": "이룸",
+  "tagline": "강의는 사람이, 반복은 비서가",
+  "departments": ["콘텐츠", "제품·개발", "운영·교육", "신설 예정", "신설 예정"],
+  "agents": [
+    { "id": "main", "name": "지혜", "emoji": "🌟", "role": "총괄", "coordinator": true, "status": "working", "level": 9, "bubble": "1주차 발표 자료 점검" },
+    { "id": "yj-research-bot", "name": "윤진", "emoji": "📊", "role": "리서치", "status": "working", "level": 6, "bubble": "AI 뉴스 5건 선별" },
+    { "id": "planning-bot", "name": "수지", "emoji": "👾", "role": "소셜미디어", "status": "idle", "level": 4 },
+    { "id": "writing-bot", "name": "옥자", "emoji": "🦊", "role": "글쓰기", "status": "working", "level": 8, "bubble": "뉴스레터 초안" },
+    { "id": "coding-bot", "name": "영미", "emoji": "💻", "role": "코딩", "status": "idle", "level": 7 },
+    { "id": "design-bot", "name": "하나", "emoji": "🎨", "role": "디자인", "status": "idle", "level": 5 },
+    { "id": "qa-bot", "name": "세라", "emoji": "🔍", "role": "QA", "status": "working", "level": 3, "bubble": "가이드 링크 점검" },
+    { "id": "ian-bot", "name": "이안", "emoji": "🪞", "role": "회고", "status": "break", "level": 2 },
+    { "id": "chunja-bot", "name": "춘자", "emoji": "🌱", "role": "인턴", "status": "idle", "level": 1 },
+    { "id": "jian-bot", "name": "지안", "emoji": "📘", "role": "학습코치", "status": "idle", "level": 4 }
+  ],
+  "planned": [
+    { "title": "수강생 응대", "reason": "업무 지도 · 카톡 문의 답변", "emoji": "💬" },
+    { "title": "영상 편집", "reason": "업무 지도 · 강의 영상 컷 편집", "emoji": "🎬" },
+    { "title": "마케팅 성과", "reason": "업무 지도 · 주간 지표 정리", "emoji": "📈" },
+    { "title": "쇼핑몰 운영", "reason": "4주차 · 어사이드 주문 관리", "emoji": "🛍️" },
+    { "title": "재무·정산", "reason": "업무 지도 · 월말 정산", "emoji": "🧾" }
+  ]
+}

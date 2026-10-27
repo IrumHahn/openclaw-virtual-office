@@ -1,0 +1,5 @@
+[
+  { "id": "main", "identityName": "루미", "identityEmoji": "🌟", "isDefault": true },
+  { "id": "nova", "name": "nova", "identityName": "노바(리서치)", "identityEmoji": "📊", "isDefault": false },
+  { "id": "flora", "name": "flora", "identityName": "플로라", "isDefault": false }
+]
