@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-style="warm">
+<html lang="ko" data-theme="warm">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,21 +10,19 @@
 <body>
 <div class="wrap">
   <div class="top">
-    <h1 id="title">가상 오피스 라이브<small id="subtitle">샘플 조직: 이룸의 맥미니 OpenClaw 팀(직원 10명). 직원들이 일하고, 커피 마시고, 회의하고, 총괄에게 결과물을 전달하는 장면이 계속 이어집니다.</small></h1>
+    <h1 id="title">가상 오피스 라이브<small id="subtitle">샘플 조직: 이룸의 맥미니 OpenClaw 팀(직원 10명). 컨셉마다 그림체가 완전히 다르고, 직원들은 통로만 따라 걸으며 일하고 · 커피 마시고 · 회의하고 · 총괄에게 결과물을 전달합니다.</small></h1>
     <div class="ctl" id="ctl">
-      <span class="lab">스타일</span>
-      <button type="button" data-style="warm" aria-pressed="true">코지 베이지</button>
-      <button type="button" data-style="glass">화이트 아틀리에</button>
-      <button type="button" data-style="boho">보헤미안</button>
-      <button type="button" data-style="night">네온 관제실</button>
+      <span class="lab">컨셉</span>
+      <span class="concepts"></span>
       <span class="lab">속도</span>
       <button type="button" data-speed="1" aria-pressed="true">보통</button>
       <button type="button" data-speed="2.2">바쁜 날</button>
+      <button type="button" id="fsBtn" title="무대만 크게">⛶ 전체 화면</button>
     </div>
   </div>
   <div class="layout">
     <div class="stage" id="stage">
-      <img class="bg" id="bg" src="bg/warm.jpg" alt="">
+      <img class="bg" id="bg" src="bg/warm.jpg" alt="" draggable="false">
       <div class="hud"><b id="hudTitle">한이룸 AI 오피스</b><div class="sub" id="hudSub">직원 10 · 채용 예정 2</div><div class="tag" id="hudTag"></div></div>
       <div class="clock" id="clock">09:41</div>
       <div id="spots"></div>
@@ -39,7 +37,8 @@
   </div>
 </div>
 <script src="org.js"></script>
-<script src="stage-map.js"></script>
+<script src="concepts.js"></script>
+<script src="maps.js"></script>
 <script src="office.js"></script>
 </body>
 </html>

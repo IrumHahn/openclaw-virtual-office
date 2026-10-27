@@ -1,7 +1,8 @@
 :root{--bg:#f3eee6;--ink:#2a2622;--muted:#7a736a;--card:#fff;--line:#e6dfd3;--accent:#d1803e;--fs:13px}
-:root[data-style="night"]{--bg:#0b0f1a;--ink:#e8eef7;--muted:#93a1b7;--card:#161d2b;--line:#26314a;--accent:#5ef0c6}
-:root[data-style="glass"]{--bg:#f6f9fc;--ink:#22303a;--muted:#7d8a96;--card:#fff;--line:#dfe6ec;--accent:#3f8f6e}
-:root[data-style="boho"]{--bg:#f4e8d6;--ink:#3b2a1e;--muted:#8a6f58;--card:#fff8ee;--line:#e4d2b8;--accent:#c2652e}
+:root[data-theme="night"]{--bg:#0b0f1a;--ink:#e8eef7;--muted:#93a1b7;--card:#161d2b;--line:#26314a;--accent:#5ef0c6}
+:root[data-theme="glass"]{--bg:#f6f9fc;--ink:#22303a;--muted:#7d8a96;--card:#fff;--line:#dfe6ec;--accent:#3f8f6e}
+:root[data-theme="boho"]{--bg:#f4e8d6;--ink:#3b2a1e;--muted:#8a6f58;--card:#fff8ee;--line:#e4d2b8;--accent:#c2652e}
+:root[data-theme="rpg"]{--bg:#1b1430;--ink:#f3e9d2;--muted:#a898c4;--card:#2a2046;--line:#4b3b78;--accent:#ffcc4d}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;transition:background .5s}
 .wrap{max-width:1500px;margin:0 auto;padding:14px 14px 40px}
@@ -17,14 +18,14 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-
 .stage{position:relative;aspect-ratio:3/2;border-radius:18px;overflow:hidden;background:#ddd;box-shadow:0 20px 60px -30px rgba(0,0,0,.45);user-select:none}
 .stage img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity .5s}
 .stage .hud{position:absolute;left:1.4%;top:2.2%;background:rgba(255,255,255,.78);backdrop-filter:blur(6px);border-radius:12px;padding:.6em .9em;font-size:var(--fs);line-height:1.35;color:#2a2622;box-shadow:0 4px 14px rgba(0,0,0,.08)}
-:root[data-style="night"] .stage .hud{background:rgba(14,20,32,.72);color:#e8eef7}
+:root[data-theme="night"] .stage .hud{background:rgba(14,20,32,.72);color:#e8eef7}
 .hud b{font-size:1.25em}
 .hud .sub{opacity:.75;font-size:.85em}
 .hud .tag{color:var(--accent);font-weight:700;font-size:.9em;margin-top:.15em}
 .clock{position:absolute;right:1.4%;top:2.2%;font-size:calc(var(--fs)*.9);background:rgba(255,255,255,.78);border-radius:999px;padding:.4em .9em;color:#2a2622;backdrop-filter:blur(6px)}
-:root[data-style="night"] .clock{background:rgba(14,20,32,.72);color:#e8eef7}
+:root[data-theme="night"] .clock{background:rgba(14,20,32,.72);color:#e8eef7}
 .spot-label{position:absolute;transform:translate(-50%,-50%);font-size:calc(var(--fs)*.72);color:rgba(60,50,40,.55);background:rgba(255,255,255,.5);border-radius:6px;padding:.1em .5em;pointer-events:none}
-:root[data-style="night"] .spot-label{color:rgba(230,236,247,.6);background:rgba(14,20,32,.45)}
+:root[data-theme="night"] .spot-label{color:rgba(230,236,247,.6);background:rgba(14,20,32,.45)}
 
 /* ── 배우 ── */
 .actor{position:absolute;left:0;top:0;width:0;height:0;transition:left var(--dur,1.6s) linear,top var(--dur,1.6s) linear;will-change:left,top}
@@ -72,3 +73,18 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-
 .log time{color:var(--muted);font-size:11px;flex:none}
 .note{font-size:12px;color:var(--muted);line-height:1.6}
 .note code{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:0 5px}
+
+/* 컨셉 버튼 */
+.ctl .concepts{display:inline-flex;flex-wrap:wrap;gap:6px}
+.ctl .concepts button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border-radius:12px;padding:6px 11px;text-align:left}
+.ctl .concepts button small{font-size:10px;opacity:.7;font-weight:400}
+.ctl .concepts button[aria-pressed="true"] small{opacity:.9}
+/* 픽셀 컨셉 */
+.stage.pixel img.bg,.stage.pixel img.sprite,:root[data-concept="rpg"] .roster img{image-rendering:pixelated;image-rendering:crisp-edges}
+:root[data-concept="rpg"] .actor .nametag{border-radius:2px;border:2px solid #2a2046;box-shadow:3px 3px 0 #2a2046;font-family:ui-monospace,Menlo,"Courier New",monospace;font-size:calc(var(--fs)*.9)}
+:root[data-concept="rpg"] .actor .nametag::after{display:none}
+:root[data-concept="rpg"] .actor .bubble{border-radius:4px;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
+:root[data-concept="rpg"] .stage .hud,:root[data-concept="rpg"] .clock{border-radius:4px;background:#f3e9d2;color:#1b1430;border:3px solid #2a2046;box-shadow:4px 4px 0 #2a2046;backdrop-filter:none}
+:root[data-theme="night"] .actor .nametag,:root[data-theme="rpg"] .actor .nametag.dark{background:#1b2434;color:#e8eef7;border-color:#2f3d55}
+:root[data-theme="night"] .actor .nametag::after{border-top-color:#1b2434}
+:root[data-theme="night"] .actor .nametag small{color:#93a1b7}
