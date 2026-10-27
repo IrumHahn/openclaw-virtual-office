@@ -5,7 +5,8 @@ OpenClaw 에이전트 팀을 **아이소메트릭 가상 오피스 그림**으�
 - 스타일 4종: 코지 베이지 · 화이트 아틀리에 · 레트로 픽셀 · 네온 관제실
 - 성장 단계 3종: 지금(책상 4) · 6개월 뒤(12) · 2년 뒤(20, 부서 구역)
 - 의존성 0(Node 18+). 외부 폰트·이미지·스크립트 없음 — 대시보드 위젯 격리 칸에서 그대로 열린다.
-- 시안: [`samples/index.html`](samples/index.html) (스타일·단계를 눌러 바로 비교, 샘플 조직 내장)
+- **라이브 시안(새 엔진)**: [`web/`](web/) — AI 생성 아이소메트릭 배경 4종(`web/bg/`) + 뜨개 인형 캐릭터 12종(`web/chars/`) 위에서 직원들이 걷고·일하고·회의하고·전달하는 장면. 운영 시안: https://run-academy.pages.dev/agent-tools-office/
+- (구) SVG 절차 렌더러 시안: `samples/index.html` — 라이브 엔진으로 교체 예정. 스킬(`skill/virtual-office`)도 라이브 엔진 기준으로 재작성 예정.
 
 ```
 agents list + team.json + my-work-map.md → collect_org.mjs → org.json → (옵션 번호 선택) → build_office.mjs → widget.html · office.html
