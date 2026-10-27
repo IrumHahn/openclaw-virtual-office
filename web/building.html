@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>사옥 단면도</title>
+<meta name="description" content="5층 사옥을 단면으로 본다. 층마다 부서가 있고 직원은 엘리베이터로 층을 오간다. 왼쪽 층 목록으로 층을 비춘다.">
+<link rel="stylesheet" href="engine.css">
+<style>
+:root{--bg:#f6f1e9;--ink:#2d2a26;--muted:#8a827a;--card:#fff;--line:#e8e0d4;--accent:#e07a3f}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.wrap{max-width:1560px;margin:0 auto;padding:16px}
+.head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.head h1{margin:0;font-size:22px}.head h1 small{display:block;font-size:13px;color:var(--muted);font-weight:500;margin-top:3px}
+.head a{color:var(--muted);text-decoration:none;font-size:13px}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:16px}
+.floors{display:grid;gap:8px;align-content:start}
+.floor{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s,transform .2s}
+.floor:hover{transform:translateX(3px)}.floor.on{border-color:var(--accent)}
+.floor b{font-size:20px;min-width:36px}.floor span{font-size:14px}.floor .n{margin-left:auto;background:#fbe9df;color:var(--accent);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700}
+.floor .n.zero{background:#f0ece6;color:var(--muted)}
+.cur{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;text-align:center;margin-top:6px}
+.cur b{display:block;font-size:30px;color:var(--accent)}.cur small{color:var(--muted);font-size:12px}
+.stage{aspect-ratio:1680/945;border-radius:18px;background:#dfe9f3;--tag-bg:#fff;--tag-ink:#2d2a26;--tag-muted:#8a827a;--tag-line:rgba(0,0,0,.08);--accent:#e07a3f;--fs:10.5px;box-shadow:0 24px 50px -30px rgba(0,0,0,.4)}
+.band{position:absolute;left:8%;right:4%;background:rgba(224,122,63,.14);border:2px dashed rgba(224,122,63,.6);border-radius:8px;pointer-events:none;opacity:0;transition:opacity .25s}
+.band.on{opacity:1}
+.flabel{position:absolute;left:8.5%;transform:translateY(-100%);background:#fff;border-radius:6px 6px 0 0;padding:2px 8px;font-size:11px;font-weight:700;color:var(--accent);opacity:0;pointer-events:none}
+.flabel.on{opacity:1}
+.actor .nametag{padding:.15em .5em}.actor .nametag::after{display:none}
+.lift{position:absolute;left:10.9%;width:5.4%;height:3%;background:rgba(224,122,63,.5);border-radius:3px;pointer-events:none;transition:top 1.6s linear;opacity:0}
+.lift.on{opacity:1}
+.side{display:grid;gap:10px;margin-top:12px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px}
+.card h3{margin:0 0 6px;font-size:12px;color:var(--muted)}
+.log{list-style:none;margin:0;padding:0;font-size:12px;display:grid;gap:4px;max-height:150px;overflow:auto}
+.log time{color:var(--muted);margin-right:6px}
+.toggle{display:flex;gap:6px}.toggle button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer}.toggle button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><h1>한이룸 사옥<small>층마다 부서가 있고, 직원은 엘리베이터로 층을 오가요. 왼쪽에서 층을 누르면 그 층을 비춰요.</small></h1><a href="index.html">← 시안 목록</a></div>
+  <div class="layout">
+    <div>
+      <div class="floors" id="floors"></div>
+      <div class="cur"><b id="curF">전체</b><small>현재 층</small></div>
+      <div class="side"><div class="card"><h3>엘리베이터</h3><div class="toggle"><button type="button" data-speed="1" aria-pressed="true">보통</button><button type="button" data-speed="2.2">출근 시간</button></div></div><div class="card"><h3>움직임</h3><ul class="log" id="log"></ul></div></div>
+    </div>
+    <div class="stage" id="stage"><img class="bg" src="bg/building.jpg" alt="" draggable="false"><div id="bands"></div><div class="lift" id="lift"></div><div id="actors"></div></div>
+  </div>
+</div>
+<script src="org.js"></script>
+<script src="engine.js"></script>
+<script src="maps-v3.js"></script>
+<script>
+(function(){
+  const ORG = window.OFFICE_ORG, MAP = window.OFFICE_MAPS_V3.BUILDING
+  const stage = document.getElementById('stage')
+  const fl = document.getElementById('floors'), bands = document.getElementById('bands')
+  let cur = null
+  for (const f of MAP.floors) {
+    const b = document.createElement('div'); b.className = 'floor'; b.innerHTML = `<b>${f.id}F</b><span>${f.label.replace(/^\dF /, '')}</span><span class="n zero" data-f="${f.id}">0</span>`; b.dataset.f = f.id
+    b.addEventListener('click', () => { cur = cur === f.id ? null : f.id; for (const x of fl.children) x.classList.toggle('on', Number(x.dataset.f) === cur); for (const x of bands.children) x.classList.toggle('on', Number(x.dataset.f) === cur); document.getElementById('curF').textContent = cur ? `${cur}F` : '전체' }); fl.appendChild(b)
+    const band = document.createElement('div'); band.className = 'band'; band.dataset.f = f.id; band.style.top = `${f.y[0]}%`; band.style.height = `${f.y[1] - f.y[0]}%`; bands.appendChild(band)
+    const lab = document.createElement('div'); lab.className = 'flabel'; lab.dataset.f = f.id; lab.style.top = `${f.y[0]}%`; lab.textContent = f.label; band.appendChild(lab)
+  }
+  const floorOf = y => (MAP.floors.find(f => y >= f.y[0] - 1 && y <= f.y[1] + 1) || {}).id
+  const t = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` }
+  const E = window.OfficeEngine.create({
+    stage, actorsEl: document.getElementById('actors'), org: ORG, map: MAP, chars: 'chars/knit', spriteScale: 0.052, flat: true, walkSpeed: 18,
+    lines: { lounge: ['5F 소파 최고', '잠깐 쉬고…', '🌿'], coffee: ['1F 카페 ☕', '라떼 하나', '당 충전'] },
+    on(ev, p) {
+      if (ev === 'log') { const li = document.createElement('li'); li.innerHTML = `<time>${t()}</time><span></span>`; li.lastChild.textContent = p.text; const ul = document.getElementById('log'); ul.prepend(li); while (ul.children.length > 10) ul.lastChild.remove() }
+      if (ev === 'status') counts()
+    },
+  })
+  E.start()
+  function counts() { const c = {}; for (const a of E.actors) if (!a.ghost) { const f = floorOf(a.y); c[f] = (c[f] || 0) + 1 } for (const n of fl.querySelectorAll('.n')) { const v = c[n.dataset.f] || 0; n.textContent = v; n.classList.toggle('zero', v === 0) } }
+  // 엘리베이터 칸: 승강로(x≈11~16%) 안에 있는 직원이 있으면 그 높이로
+  const lift = document.getElementById('lift')
+  setInterval(() => { counts(); const rider = E.actors.find(a => a.x < 19 && a.el.classList.contains('walk')); if (rider) { lift.classList.add('on'); lift.style.top = `${rider.y - 1.5}%` } else lift.classList.remove('on') }, 400)
+  document.querySelector('.toggle').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; E.setSpeed(Number(b.dataset.speed)); for (const x of b.parentElement.children) x.setAttribute('aria-pressed', String(x === b)) })
+  counts()
+})()
+</script>
+</body>
+</html>
