@@ -37,11 +37,12 @@ body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradi
 .toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--win);border:3px solid var(--gold);color:var(--gold);padding:8px 18px;font-size:14px;box-shadow:4px 4px 0 #000;opacity:0;transition:opacity .2s;z-index:1300;white-space:nowrap}
 .toast.on{opacity:1}
 .day{position:absolute;right:12px;top:12px;background:var(--win);border:2px solid var(--line);padding:4px 10px;font-size:12px;box-shadow:3px 3px 0 #000;z-index:1200}
+html.embed .navlink{display:none}html.embed body{background:transparent}
 </style>
 </head>
 <body>
 <div class="frame">
-  <div class="topbar"><div><b>⚔ 한이룸 길드 오피스</b> &nbsp; <span>DAY <span id="day">1</span> · 골드 <span id="gold">120</span>G</span></div><a href="index.html">[ 시안 목록 ]</a></div>
+  <div class="topbar"><div><b>⚔ 한이룸 길드 오피스</b> &nbsp; <span>DAY <span id="day">1</span> · 골드 <span id="gold">120</span>G</span></div><a class="navlink" href="index.html">[ 시안 목록 ]</a></div>
   <div class="hud">
     <div>
       <div class="stage pixel" id="stage"><img class="bg" src="bg/pixel.png" alt="" draggable="false"><div id="actors"></div><div class="toast" id="toast"></div><div class="day" id="clock">09:41</div></div>

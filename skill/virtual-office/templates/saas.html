@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 오피스 SaaS</title>
+<meta name="description" content="사이드바 앱 안의 오피스 화면. 구역 칩으로 대표실·비서실·업무 공간·회의실·탕비실을 비추고, AI 직원이 지금 어디서 무엇을 하는지 본다.">
+<link rel="stylesheet" href="engine.css">
+<style>
+:root{--side:#161a23;--bg:#f5f6f8;--ink:#1d2330;--muted:#6b7280;--line:#e5e7eb;--brand:#7c5cff}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.app{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+.side{background:var(--side);color:#cbd2e0;padding:22px 18px;display:flex;flex-direction:column;gap:6px}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:18px}.logo .mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#9b7bff,#6d4cff);display:grid;place-items:center;color:#fff;font-weight:800}
+.logo b{display:block;color:#fff;font-size:14px;letter-spacing:.6px}.logo small{font-size:10px;letter-spacing:2px;color:#8b93a7}
+.nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:#cbd2e0;text-decoration:none;font-size:14px}
+.nav a.on{background:#262c3a;color:#fff}.nav .badge{margin-left:auto;background:#ef4444;color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
+.side h4{margin:22px 0 8px;font-size:11px;color:#8b93a7;font-weight:600}
+.now{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.now li{display:flex;gap:10px;align-items:center}.now img{width:34px;height:34px;object-fit:contain;background:#232938;border-radius:50%}
+.now b{display:block;font-size:13px;color:#fff}.now small{font-size:11px;color:#8b93a7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:150px}
+.now .dot{margin-left:auto;width:8px;height:8px;border-radius:50%;background:#64748b}.now .dot.g{background:#22c55e}.now .dot.b{background:#3b82f6}.now .dot.y{background:#f59e0b}
+.side .foot{margin-top:auto;font-size:12px;color:#8b93a7;display:flex;gap:8px;align-items:center}.side select{background:#232938;color:#fff;border:1px solid #2f3646;border-radius:8px;padding:6px 10px;font-size:12px}
+.main{padding:28px 32px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.head h1{margin:0;font-size:26px}.head p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px -6px #7c5cff}
+.chips{display:flex;gap:8px;margin:18px 0 14px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:13px;cursor:pointer;color:var(--ink)}
+.chip.on{background:#1d2330;color:#fff;border-color:#1d2330}
+.chips .right{margin-left:auto;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px}
+.stage{aspect-ratio:1680/945;border-radius:18px;background:#e9ebef;--tag-bg:#fff;--tag-ink:#1d2330;--tag-muted:#6b7280;--tag-line:rgba(0,0,0,.08);--accent:#7c5cff;--fs:12px;box-shadow:0 20px 40px -24px rgba(0,0,0,.35)}
+.zone{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.zone polygon{fill:transparent;stroke:transparent;transition:fill .3s,stroke .3s}
+.zone polygon.on{fill:var(--zc);fill-opacity:.22;stroke:var(--zc);stroke-width:3;stroke-dasharray:8 6;animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-28}}
+.zlabel{position:absolute;transform:translate(-50%,-50%);background:#fff;border:2px solid var(--zc);color:var(--zc);font-weight:800;font-size:14px;padding:6px 14px;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.15);opacity:0;transition:opacity .3s;pointer-events:none}
+.zlabel.on{opacity:1}
+.actor.dim{opacity:.35;filter:grayscale(.3)}
+.detail{position:absolute;right:16px;top:16px;width:260px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 12px 30px -10px rgba(0,0,0,.3);font-size:13px;display:none;z-index:1200}
+.detail.on{display:block}.detail h3{margin:0 0 4px;font-size:15px}.detail p{margin:2px 0;color:var(--muted)}.detail .task{margin-top:8px;padding:8px 10px;background:#f3f0ff;border-radius:8px;color:#4c3bb3;font-weight:600}
+.detail .x{position:absolute;right:10px;top:8px;border:0;background:none;font-size:16px;cursor:pointer;color:var(--muted)}
+.meetlog{position:absolute;left:16px;bottom:16px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-radius:12px;padding:10px 14px;font-size:12px;max-width:380px;display:none;z-index:1100}
+.meetlog.on{display:block}.meetlog b{display:block;margin-bottom:4px}
+html.embed .navlink{display:none}html.embed body{background:transparent}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><div class="mark">A</div><div><b id="brand">한이룸</b><small>AI OFFICE</small></div></div>
+    <nav class="nav"><a href="#">▦ 업무보드<span class="badge" id="nTodo">5</span></a><a href="#">◔ 진척 현황</a><a href="#">◉ AI 직원</a><a href="#">≡ 보고서</a><a href="#" class="on">⌂ 오피스</a></nav>
+    <h4>지금 상태</h4><ul class="now" id="now"></ul>
+    <div class="foot">캐릭터 <select><option>사람 + 파트너</option><option>로봇</option><option>인형</option></select> &nbsp; <a class="navlink" href="index.html" style="color:#8b93a7;margin-left:auto">시안 목록</a></div>
+  </aside>
+  <main class="main">
+    <div class="head"><div><h1>오피스</h1><p>AI 직원들이 지금 어디서 무엇을 하는지 한눈에</p></div><button class="btn" id="orderBtn">+ 업무 지시</button></div>
+    <div class="chips" id="chips"><button class="chip on" data-zone="all">전체</button><button class="chip" data-zone="ceo">대표실</button><button class="chip" data-zone="sec">비서실</button><button class="chip" data-zone="work">업무 공간</button><button class="chip" data-zone="meet">회의실</button><button class="chip" data-zone="pantry">탕비실</button><span class="right">📋 회의 기록 <b id="nMeet">0</b></span></div>
+    <div class="stage" id="stage"><img class="bg" src="bg/saas.jpg" alt="" draggable="false"><svg class="zone" id="zones" viewBox="0 0 100 100" preserveAspectRatio="none"></svg><div id="zlabels"></div><div id="actors"></div>
+      <div class="detail" id="detail"><button class="x" id="detailX">×</button><h3 id="dName"></h3><p id="dRole"></p><p id="dStatus"></p><div class="task" id="dTask"></div></div>
+      <div class="meetlog" id="meetlog"></div>
+    </div>
+  </main>
+</div>
+<script src="org.js"></script>
+<script src="engine.js"></script>
+<script src="maps-v3.js"></script>
+<script>
+(function(){
+  const ORG = window.OFFICE_ORG, MAP = window.OFFICE_MAPS_V3.SAAS
+  const stage = document.getElementById('stage')
+  let meetings = 0
+  // 구역 폴리곤
+  const svg = document.getElementById('zones'), zl = document.getElementById('zlabels')
+  for (const [k, z] of Object.entries(MAP.zones)) {
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); p.setAttribute('points', z.poly.map(q => q.join(',')).join(' ')); p.dataset.zone = k; p.style.setProperty('--zc', z.color); svg.appendChild(p)
+    const cx = z.poly.reduce((s, q) => s + q[0], 0) / z.poly.length, cy = z.poly.reduce((s, q) => s + q[1], 0) / z.poly.length
+    const l = document.createElement('div'); l.className = 'zlabel'; l.textContent = z.label; l.dataset.zone = k; l.style.setProperty('--zc', z.color); l.style.left = `${cx}%`; l.style.top = `${cy - 8}%`; zl.appendChild(l)
+  }
+  function inZone(actor, k) { const z = MAP.zones[k]; if (!z) return true; let inside = false; const P = z.poly; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > actor.y) !== (yj > actor.y) && actor.x < (xj - xi) * (actor.y - yi) / (yj - yi) + xi) inside = !inside } return inside }
+  let zone = 'all'
+  document.getElementById('chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; zone = b.dataset.zone; for (const c of document.querySelectorAll('.chip')) c.classList.toggle('on', c === b); for (const p of svg.querySelectorAll('polygon')) p.classList.toggle('on', p.dataset.zone === zone); for (const l of zl.children) l.classList.toggle('on', l.dataset.zone === zone); refreshDim() })
+  function refreshDim() { for (const a of E.actors) a.el.classList.toggle('dim', zone !== 'all' && !inZone(a, zone)) }
+  const E = window.OfficeEngine.create({
+    stage, actorsEl: document.getElementById('actors'), org: ORG, map: MAP, chars: 'chars/chibi', spriteScale: 0.075, depth: [0.7, 1.12],
+    weights: [['type', 5], ['coffee', 2], ['deliver', 3], ['chat', 2], ['board', 1], ['lounge', 1.5], ['meeting', 1.3]],
+    on(ev, p) {
+      if (ev === 'status') { renderNow(); refreshDim() }
+      if (ev === 'meeting') { meetings += 1; document.getElementById('nMeet').textContent = meetings; const m = document.getElementById('meetlog'); m.innerHTML = `<b>📋 회의 기록 #${meetings}</b>${p.map(g => g.a.name).join(' · ')} — 이번 주 목표 / 초안 담당 / 검수자 결정`; m.classList.add('on'); setTimeout(() => m.classList.remove('on'), 9000) }
+      if (ev === 'select') showDetail(p)
+    },
+  })
+  E.start()
+  setInterval(refreshDim, 500)
+  function renderNow() {
+    const ul = document.getElementById('now'); ul.innerHTML = ''
+    for (const a of E.actors.filter(x => !x.ghost)) {
+      const li = document.createElement('li'); const dot = a.status === '작업 중' ? 'g' : (a.status === '회의 중' || a.status === '대화 중') ? 'b' : (a.status === '휴식' || a.status === '커피 ☕') ? 'y' : ''
+      li.innerHTML = `<img alt=""><div><b></b><small></small></div><span class="dot ${dot}"></span>`
+      li.querySelector('img').src = `chars/chibi/${a.a.sprite}-front.png`; li.querySelector('b').textContent = `${a.a.name} · ${a.a.role}`; li.querySelector('small').textContent = `${a.status} · ${(a.a.tasks || [''])[0]}`
+      li.addEventListener('click', () => showDetail(a)); ul.appendChild(li)
+    }
+  }
+  function showDetail(a) { if (a.ghost) return; const d = document.getElementById('detail'); d.classList.add('on'); document.getElementById('dName').textContent = a.a.name; document.getElementById('dRole').textContent = `${a.a.role} · Lv.${a.lv}`; document.getElementById('dStatus').textContent = `상태: ${a.status}`; document.getElementById('dTask').textContent = `지금: ${(a.a.tasks || ['—'])[0]}` }
+  document.getElementById('detailX').addEventListener('click', () => document.getElementById('detail').classList.remove('on'))
+  document.getElementById('orderBtn').addEventListener('click', () => { const w = E.workers.filter(x => !x.busy); const a = w[Math.floor(Math.random() * w.length)]; if (!a) return; E.say(E.leader, `📣 ${a.a.name}, ${(a.a.tasks || ['새 업무'])[1] || '새 업무'} 부탁해요`, { ms: 3200 }); setTimeout(() => E.say(a, '넵, 바로 할게요!'), 1200); const n = document.getElementById('nTodo'); n.textContent = Number(n.textContent) + 1 })
+  document.getElementById('brand').textContent = ORG.company.replace(' AI 오피스', '') || 'ANOGRO'
+  renderNow()
+})()
+</script>
+</body>
+</html>

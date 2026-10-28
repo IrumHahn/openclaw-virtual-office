@@ -25,26 +25,27 @@ openclaw skills list | grep virtual-office     # ready 가 보이면 성공 → 
 그다음 에이전트 채팅에서:
 
 ```
-가상 오피스 만들어줘. 내 업무 지도(my-work-map.md)와 팀(team.json)을 보고 지금 직원과 앞으로 필요한 자리를 먼저 표로 보여주고,
-스타일·성장 단계 옵션을 번호로 보여줘. 내가 고르면 만들어서 대시보드 홈 위젯으로 보내줘. 허용 창이 몇 번 뜰지 미리 알려줘.
+가상 오피스 만들어줘. 내 업무 지도(my-work-map.md)와 팀(team.json)을 보고 지금 직원과 앞으로 필요한 자리(채용 예정)를 먼저 표로 보여줘.
+그다음 템플릿 5종을 번호로 보여주고, 내가 고르면 만들어서 대시보드 홈 「나의 위젯」으로 보내줘. 허용 창이 몇 번 뜰지 미리 알려줘.
 ```
 
-홈에 띄우려면 [openclaw-personal-dashboard](https://github.com/IrumHahn/openclaw-personal-dashboard)(dashboard-builder 스킬 + PC 앱)가 먼저 있어야 한다. 없으면 `office.html` 을 브라우저로 열면 된다.
+홈에 띄우려면 [openclaw-personal-dashboard](https://github.com/IrumHahn/openclaw-personal-dashboard) **v0.4 이상**(dashboard-builder 스킬 + PC 앱, 위젯 CSP 가 이 키트의 CDN 을 허용)이 있어야 한다. 없으면 `office.html` 을 브라우저로 열면 된다.
 
 ## 직접 돌려 보기
 
 ```bash
 node skill/virtual-office/scripts/build_office.mjs --list
-node skill/virtual-office/scripts/build_office.mjs --org samples/macmini-org.json --style night --stage floor --out ./out
+node skill/virtual-office/scripts/build_office.mjs --org samples/macmini-org.json --template rpg --out ./out
 open out/office.html
-node scripts/build_samples.mjs            # samples/index.html 다시 만들기
-node --test tests/*.test.mjs              # 테스트 12개
+node scripts/sync_templates.mjs          # web/ 수정 후 스킬 templates/ 동기화
+node --test tests/*.test.mjs             # 테스트
 ```
 
 ## 구성
 
-- `skill/virtual-office/` — 설치 단위. `SKILL.md` 절차 · `scripts/collect_org.mjs`(재료 → org.json) · `scripts/build_office.mjs`(org + 옵션 → HTML) · `scripts/lib/render.mjs`(순수 렌더러, 브라우저 공용) · `references/options.md`(옵션·좌석 규칙·org.json) · `references/positions.md`(채용 예정 추출 규칙)
-- `samples/` — 샘플 조직(`macmini-org.json`, 실제 운영 중인 팀의 이름·역할) + 시안 페이지
+- `skill/virtual-office/` — 설치 단위. `SKILL.md` 절차 · `scripts/collect_org.mjs`(재료 → org.json) · `scripts/build_office.mjs`(org + 템플릿 → widget.html/office.html, 에셋은 CDN) · `templates/`(web/ 사본) · `references/templates.md`·`positions.md`
+- `web/` — 시안 5종 페이지 + 공용 엔진 + 에셋(bg·chars·audio). jsDelivr 가 `@main/web/` 으로 서빙한다 → 에셋 경로를 바꾸면 기존 위젯이 깨진다
+- `samples/` — 샘플 조직(`macmini-org.json`)
 - `tests/` — 렌더·수집·빌드 테스트, 가짜 OpenClaw CLI
 - `docs/quickstart-ko.md` — 수강생용 5분 안내
 

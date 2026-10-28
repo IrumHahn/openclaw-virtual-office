@@ -43,11 +43,12 @@
 .bar{display:flex;justify-content:space-between;align-items:center;padding:0 4px 10px;font-size:11px;color:var(--muted)}.bar a{color:var(--muted);text-decoration:none}
 .bar b{color:var(--ink);font-weight:400}
 .grain{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);border-radius:10px}
+html.embed .navlink{display:none}html.embed body{background:transparent}
 </style>
 </head>
 <body>
 <div class="deck">
-  <div class="bar"><div><b>MISSION CONTROL</b> · 한이룸 AI OPS · <span id="utc"></span></div><a href="index.html">← 시안 목록</a></div>
+  <div class="bar"><div><b>MISSION CONTROL</b> · 한이룸 AI OPS · <span id="utc"></span></div><a class="navlink" href="index.html">← 시안 목록</a></div>
   <div class="stage" id="stage"><img class="bg" src="bg/control.jpg" alt="" draggable="false"><div class="grain"></div><div id="actors"></div>
     <div class="title"><b>OPS FLOOR 01</b><small id="sub">10 AGENTS · ALL SYSTEMS NOMINAL</small></div>
     <div class="hud tl panel"><h4>MISSION TIMELINE</h4><ul id="tl"></ul></div>

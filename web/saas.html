@@ -42,6 +42,7 @@
 .detail .x{position:absolute;right:10px;top:8px;border:0;background:none;font-size:16px;cursor:pointer;color:var(--muted)}
 .meetlog{position:absolute;left:16px;bottom:16px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-radius:12px;padding:10px 14px;font-size:12px;max-width:380px;display:none;z-index:1100}
 .meetlog.on{display:block}.meetlog b{display:block;margin-bottom:4px}
+html.embed .navlink{display:none}html.embed body{background:transparent}
 </style>
 </head>
 <body>
@@ -50,7 +51,7 @@
     <div class="logo"><div class="mark">A</div><div><b id="brand">한이룸</b><small>AI OFFICE</small></div></div>
     <nav class="nav"><a href="#">▦ 업무보드<span class="badge" id="nTodo">5</span></a><a href="#">◔ 진척 현황</a><a href="#">◉ AI 직원</a><a href="#">≡ 보고서</a><a href="#" class="on">⌂ 오피스</a></nav>
     <h4>지금 상태</h4><ul class="now" id="now"></ul>
-    <div class="foot">캐릭터 <select><option>사람 + 파트너</option><option>로봇</option><option>인형</option></select> &nbsp; <a href="index.html" style="color:#8b93a7;margin-left:auto">시안 목록</a></div>
+    <div class="foot">캐릭터 <select><option>사람 + 파트너</option><option>로봇</option><option>인형</option></select> &nbsp; <a class="navlink" href="index.html" style="color:#8b93a7;margin-left:auto">시안 목록</a></div>
   </aside>
   <main class="main">
     <div class="head"><div><h1>오피스</h1><p>AI 직원들이 지금 어디서 무엇을 하는지 한눈에</p></div><button class="btn" id="orderBtn">+ 업무 지시</button></div>

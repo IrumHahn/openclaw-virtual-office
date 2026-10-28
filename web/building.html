@@ -35,11 +35,12 @@
 .log{list-style:none;margin:0;padding:0;font-size:12px;display:grid;gap:4px;max-height:150px;overflow:auto}
 .log time{color:var(--muted);margin-right:6px}
 .toggle{display:flex;gap:6px}.toggle button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer}.toggle button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+html.embed .navlink{display:none}html.embed body{background:transparent}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="head"><h1>한이룸 사옥<small>층마다 부서가 있고, 직원은 엘리베이터로 층을 오가요. 왼쪽에서 층을 누르면 그 층을 비춰요.</small></h1><a href="index.html">← 시안 목록</a></div>
+  <div class="head"><h1>한이룸 사옥<small>층마다 부서가 있고, 직원은 엘리베이터로 층을 오가요. 왼쪽에서 층을 누르면 그 층을 비춰요.</small></h1><a class="navlink" href="index.html">← 시안 목록</a></div>
   <div class="layout">
     <div>
       <div class="floors" id="floors"></div>

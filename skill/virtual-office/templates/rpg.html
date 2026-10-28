@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>레트로 RPG 오피스</title>
+<meta name="description" content="16비트 JRPG처럼 보는 내 AI 오피스. 파티원(직원) 창, 퀘스트 로그, 대화창, CRT 화면.">
+<link rel="stylesheet" href="engine.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Galmuri11&display=swap');
+:root{--ink:#f3e9d2;--bg:#120e22;--win:#1b1430;--line:#f3e9d2;--gold:#ffcc4d;--hp:#5ad36b;--mp:#5aa9ff}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Galmuri11",ui-monospace,Menlo,"Courier New",monospace;image-rendering:pixelated}
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px);pointer-events:none;z-index:50;mix-blend-mode:multiply}
+.frame{max-width:1460px;margin:0 auto;padding:16px}
+.hud{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}
+.win{background:var(--win);border:3px solid var(--line);box-shadow:inset 0 0 0 3px var(--bg),inset 0 0 0 5px var(--line),6px 6px 0 #000;padding:12px 14px;border-radius:4px}
+.win h3{margin:0 0 8px;font-size:13px;color:var(--gold);letter-spacing:1px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px}
+.topbar b{color:var(--gold);font-size:16px}.topbar a{color:#a898c4;text-decoration:none}
+.stage{aspect-ratio:1680/945;border:4px solid var(--line);box-shadow:8px 8px 0 #000;background:#000;--tag-bg:#1b1430;--tag-ink:#f3e9d2;--tag-muted:#a898c4;--tag-line:#f3e9d2;--accent:#ffcc4d;--fs:11px}
+.stage .actor .nametag{border-radius:0;border:2px solid var(--line);box-shadow:3px 3px 0 #000;font-family:inherit;padding:.15em .5em}
+.stage .actor .nametag::after{display:none}
+.stage .actor .bubble{border-radius:0;border:2px solid var(--line);box-shadow:3px 3px 0 #000;background:#1b1430;color:#f3e9d2;font-family:inherit;font-weight:400}
+.stage .actor .bubble::after{display:none}
+.stage .actor.ghost .nametag{border-style:dashed;color:var(--gold)}.stage .actor.ghost .nametag small{display:none}
+.party{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-height:430px;overflow:auto}
+.party li{display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;font-size:12px}
+.party img{width:36px;height:36px;object-fit:contain;image-rendering:pixelated;background:#2a2046;border:2px solid #4b3b78}
+.party .bars{display:grid;gap:3px}.party .name{display:flex;justify-content:space-between}.party .name b{color:#fff}.party .name span{color:#a898c4;font-size:11px}
+.bar{height:7px;background:#000;border:1px solid #4b3b78;position:relative}.bar i{position:absolute;inset:0;width:var(--w);background:var(--hp)}.bar.mp i{background:var(--mp)}
+.quest{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:12px;max-height:220px;overflow:auto}
+.quest li::before{content:"▶ ";color:var(--gold)}.quest li.done{color:#7a6f98;text-decoration:line-through}.quest li.done::before{content:"✔ ";color:var(--hp)}
+.dialog{margin-top:14px;min-height:78px;font-size:14px;line-height:1.7}
+.dialog .who{color:var(--gold)}.dialog .cur{display:inline-block;width:10px;height:14px;background:var(--ink);margin-left:4px;animation:blink 1s steps(2) infinite;vertical-align:-2px}
+@keyframes blink{50%{opacity:0}}
+.keys{display:flex;gap:8px;margin-top:10px;font-size:11px;color:#a898c4}.keys kbd{border:2px solid #4b3b78;padding:1px 6px;color:#fff;background:#2a2046}
+.toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--win);border:3px solid var(--gold);color:var(--gold);padding:8px 18px;font-size:14px;box-shadow:4px 4px 0 #000;opacity:0;transition:opacity .2s;z-index:1300;white-space:nowrap}
+.toast.on{opacity:1}
+.day{position:absolute;right:12px;top:12px;background:var(--win);border:2px solid var(--line);padding:4px 10px;font-size:12px;box-shadow:3px 3px 0 #000;z-index:1200}
+html.embed .navlink{display:none}html.embed body{background:transparent}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="topbar"><div><b>⚔ 한이룸 길드 오피스</b> &nbsp; <span>DAY <span id="day">1</span> · 골드 <span id="gold">120</span>G</span></div><a class="navlink" href="index.html">[ 시안 목록 ]</a></div>
+  <div class="hud">
+    <div>
+      <div class="stage pixel" id="stage"><img class="bg" src="bg/pixel.png" alt="" draggable="false"><div id="actors"></div><div class="toast" id="toast"></div><div class="day" id="clock">09:41</div></div>
+      <div class="win dialog" id="dialog"><span class="who">지혜</span>: 오늘도 길드 오피스에 잘 왔어. 파티원들이 각자 퀘스트를 진행 중이야. 캐릭터를 누르면 말을 걸 수 있어.<span class="cur"></span><div class="keys"><kbd>클릭</kbd> 말 걸기 <kbd>Space</kbd> 바쁜 하루 <kbd>F</kbd> 전체 화면</div></div>
+    </div>
+    <div style="display:grid;gap:14px;align-content:start">
+      <div class="win"><h3>▣ 파티</h3><ul class="party" id="party"></ul></div>
+      <div class="win"><h3>▣ 퀘스트 로그</h3><ul class="quest" id="quest"></ul></div>
+    </div>
+  </div>
+</div>
+<script src="org.js"></script>
+<script src="engine.js"></script>
+<script src="maps.js"></script>
+<script>
+(function(){
+  const ORG = window.OFFICE_ORG, MAP = window.OFFICE_MAPS.PIXEL
+  const stage = document.getElementById('stage')
+  let gold = 120, done = 0
+  const quests = []
+  const E = window.OfficeEngine.create({
+    stage, actorsEl: document.getElementById('actors'), org: ORG, map: MAP, chars: 'chars/pixel', spriteScale: 0.047, flat: true, walkSpeed: 16, ghostLabel: t => `모집 · ${t}`, ghostStatus: '빈 자리',
+    lines: { coffee: ['포션 한 모금', 'MP 회복!', '☕'], approve: ['퀘스트 완료!', '+20G', '경험치 획득!'], delivered: '퀘스트 보고합니다!', decided: '파티 결정!' },
+    on(ev, p) {
+      if (ev === 'status') renderParty()
+      if (ev === 'done') { done = p.count; gold += 20; document.getElementById('gold').textContent = gold; addQuest(`${p.actor.a.name}: ${p.task}`, true); toast(`퀘스트 완료! ${p.actor.a.name} +20G`) }
+      if (ev === 'meeting') addQuest(`파티 회의: ${p.map(g => g.a.name).join('·')}`, false)
+      if (ev === 'select') talk(p)
+      if (ev === 'log' && p.kind === 'deliver') {}
+    },
+  })
+  E.start()
+  function renderParty() {
+    const ul = document.getElementById('party'); ul.innerHTML = ''
+    for (const a of E.actors) {
+      const li = document.createElement('li'); const hp = a.ghost ? 0 : (a.status === '휴식' || a.status === '커피 ☕') ? 100 : 55 + (a.lv * 4) % 40; const mp = a.ghost ? 0 : 30 + (a.lv * 7) % 60
+      li.innerHTML = `<img alt=""><div class="bars"><div class="name"><b></b><span></span></div><div class="bar"><i style="--w:${hp}%"></i></div><div class="bar mp"><i style="--w:${mp}%"></i></div></div>`
+      li.querySelector('img').src = `chars/pixel/${a.a.sprite}-front.png`; li.querySelector('b').textContent = a.ghost ? '(공석)' : `${a.a.name} Lv.${a.lv}`; li.querySelector('span').textContent = a.ghost ? a.a.name.replace('모집 · ', '모집: ') : `${a.a.role} · ${a.status}`
+      li.addEventListener('click', () => talk(a)); ul.appendChild(li)
+    }
+  }
+  function addQuest(text, isDone) { quests.unshift({ text, isDone }); const ul = document.getElementById('quest'); ul.innerHTML = ''; for (const q of quests.slice(0, 8)) { const li = document.createElement('li'); li.textContent = q.text; li.classList.toggle('done', q.isDone); ul.appendChild(li) } }
+  for (const a of ORG.agents.slice(1, 5)) addQuest(`${a.name}: ${a.tasks[0]}`, false)
+  function talk(a) { const d = document.getElementById('dialog'); const line = a.ghost ? `이 자리는 아직 비어 있다. 업무 지도에 적힌 「${a.a.name.replace('모집 · ', '')}」을 맡을 파티원을 모집 중이다.` : `${a.status === '작업 중' ? '지금 「' + (a.a.tasks || ['작업'])[0] + '」 퀘스트를 진행 중이야.' : a.status + ' 중이야.'} 레벨 ${a.lv}까지 올렸어.`; d.innerHTML = `<span class="who">${a.ghost ? '???' : a.a.name}</span>: ${line}<span class="cur"></span><div class="keys"><kbd>클릭</kbd> 말 걸기 <kbd>Space</kbd> 바쁜 하루 <kbd>F</kbd> 전체 화면</div>`; if (!a.ghost) E.say(a, '...!', { soft: true, ms: 1200 }) }
+  function toast(t) { const el = document.getElementById('toast'); el.textContent = t; el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 2600) }
+  let fast = false
+  addEventListener('keydown', e => { if (e.code === 'Space') { fast = !fast; E.setSpeed(fast ? 2.2 : 1); toast(fast ? '바쁜 하루 모드' : '보통 속도'); e.preventDefault() } if (e.key === 'f' || e.key === 'F') { if (document.fullscreenElement) document.exitFullscreen(); else stage.requestFullscreen?.() } })
+  setInterval(() => { const d = new Date(); document.getElementById('clock').textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` }, 1000)
+  renderParty()
+})()
+</script>
+</body>
+</html>
