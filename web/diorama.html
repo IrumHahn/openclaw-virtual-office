@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>디오라마 스튜디오</title>
+<meta name="description" content="3D 렌더 미니어처 사무실. 펠트 인형 팀이 자리에서 일하고, 라디오가 흐른다.">
+<link rel="stylesheet" href="engine.css">
+<style>
+:root{--ink:#2b2a28;--muted:#8a877f;--line:#e6e3dc;--accent:#d7a24a}
+*{box-sizing:border-box}html,body{margin:0;background:#fff;color:var(--ink);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 28px 0;font-size:12px;color:var(--muted)}
+.top b{color:var(--ink);font-size:15px;letter-spacing:.2px;font-weight:700}
+.top .right{display:flex;gap:14px;align-items:center}
+.top a{color:var(--muted);text-decoration:none}
+.radio{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:4px 10px 4px 4px;cursor:pointer;background:#fff}
+.radio .disc{width:22px;height:22px;border-radius:50%;background:conic-gradient(#333 0 25%,#111 0 50%,#333 0 75%,#111 0);position:relative}
+.radio .disc::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--accent)}
+.radio.on .disc{animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.radio small{color:var(--muted)}
+.wrap{max-width:1500px;margin:0 auto;padding:10px 20px 30px}
+.stage{aspect-ratio:1680/945;border-radius:6px;background:#fff;--tag-bg:#fff;--tag-ink:#2b2a28;--tag-muted:#8a877f;--tag-line:rgba(0,0,0,.12);--accent:#d7a24a;--fs:11.5px}
+.stage .actor .nametag{border-radius:3px;padding:.15em .5em .2em;box-shadow:0 1px 2px rgba(0,0,0,.15);font-size:calc(var(--fs)*.95)}
+.stage .actor .nametag::after{display:none}
+.stage .actor .nametag b{font-weight:600}
+.stage .actor .nametag b::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#9aa0a6;margin:0 5px 1px 0;vertical-align:middle}
+.stage .actor.working .nametag b::before{background:#3fb950}
+.stage .actor.ghost .nametag{border:1px dashed #bbb}
+.stage .actor .bubble,.stage .actor .bubble.soft{border-radius:4px;font-weight:600;font-size:calc(var(--fs)*.95);background:rgba(50,48,45,.92);color:#fff;padding:.4em .7em}
+.stage .actor .bubble::after,.stage .actor .bubble.soft::after{border-top-color:rgba(50,48,45,.92)}
+.tip{position:absolute;z-index:1000;max-width:280px;background:rgba(50,48,45,.94);color:#fff;font-size:11.5px;line-height:1.5;padding:9px 11px;border-radius:4px;pointer-events:none;opacity:0;transition:opacity .15s}
+.tip.on{opacity:1}
+.foot{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 22px;padding:14px 0 0;font-size:12.5px;color:var(--muted)}
+.foot b{color:var(--ink);font-weight:600}
+.foot .sep{color:var(--line)}
+.foot .n{color:var(--ink);font-weight:700;margin-left:4px}
+.foot2{text-align:center;font-size:11px;color:#b5b2aa;margin-top:8px}
+html.embed .navlink{display:none}html.embed body{background:transparent}
+</style>
+</head>
+<body>
+<div class="top"><div><b id="brand">한이룸 studio</b> &nbsp;<span id="date"></span> · <span id="count"></span></div>
+<div class="right"><a class="navlink" href="index.html">← 시안 목록</a><div class="radio" id="radio"><div class="disc"></div><span>라디오</span><small id="radioState">OFF · 로파이 오피스 잼</small></div></div></div>
+<div class="wrap">
+  <div class="stage minimal" id="stage"><img class="bg" src="bg/diorama.jpg" alt="" draggable="false"><div id="actors"></div><div class="tip" id="tip"></div></div>
+  <div class="foot"><span>오늘의 하나 &nbsp;<b id="todayOne">1주차 발표 자료 점검</b></span><span class="sep">|</span><span>오늘 할 일<span class="n" id="nTodo">6</span></span><span>결정<span class="n" id="nDec">2</span></span><span>걸린 일<span class="n" id="nBlock">1</span></span><span>결과물<span class="n" id="nDone">0</span></span><span>관리<span class="n">3</span></span><span>게시판</span><span>라디오 <b id="radioOn">OFF</b></span></div>
+  <div class="foot2" id="foot2"></div>
+</div>
+<audio id="music" src="audio/lofi-radio.mp3" loop preload="none"></audio>
+<script src="org.js"></script>
+<script src="engine.js"></script>
+<script src="maps-v3.js"></script>
+<script>
+(function(){
+  const ORG = window.OFFICE_ORG, MAP = window.OFFICE_MAPS_V3.DIORAMA
+  const stage = document.getElementById('stage'), tip = document.getElementById('tip')
+  let decisions = 2
+  const notes = { main: '오늘 승인할 것 3건 · 목요일 발표 순서 정리 중', 'yj-research-bot': '어제 뉴스 12건 중 5건 선별 · 경쟁사 가격표 갱신', 'planning-bot': '스레드 3편 예약 완료 · 릴스 훅 문장 고민 중', 'writing-bot': '뉴스레터 초안 2/3 · 퇴고 대기', 'coding-bot': '대시보드 위젯 수정 중 · 빌드 통과', 'design-bot': '썸네일 2안 → 지혜 검수 대기', 'qa-bot': '가이드 링크 점검 중 · 깨진 링크 0', 'ian-bot': '이번 주 회고 질문 3개 준비', 'chunja-bot': '자료 폴더 정리 · 회의록 옮기는 중', 'jian-bot': '수강생 질문 2건 답변 완료' }
+  const E = window.OfficeEngine.create({
+    stage, actorsEl: document.getElementById('actors'), org: ORG, map: MAP, chars: 'chars/felt', spriteScale: 0.07, depth: [0.7, 1.15],
+    weights: [['type', 8], ['coffee', 1.2], ['deliver', 2], ['chat', 1.5], ['lounge', 1], ['meeting', .8]], idleMin: 2500, idleMax: 7000, ghostStatus: '빈 자리',
+    on(ev, p) {
+      if (ev === 'status') { p.el.classList.toggle('working', p.status === '작업 중'); updateCount() }
+      if (ev === 'done') { document.getElementById('nDone').textContent = p.count; document.getElementById('todayOne').textContent = p.task }
+      if (ev === 'meeting') { decisions += 1; document.getElementById('nDec').textContent = decisions }
+    },
+  })
+  E.start()
+  function updateCount() { const w = E.actors.filter(a => !a.ghost && a.status === '작업 중').length; document.getElementById('count').textContent = `${w}명 작업 중` }
+  stage.addEventListener('mousemove', e => {
+    const el = e.target.closest('.actor'); if (!el) { tip.classList.remove('on'); return }
+    const actor = E.actors.find(a => a.el === el); if (!actor || actor.ghost) { tip.classList.remove('on'); return }
+    tip.textContent = `${actor.a.name} · ${actor.a.role} — ${actor.status} · ${notes[actor.a.id] || ''}`
+    const r = stage.getBoundingClientRect(); tip.style.left = `${Math.min(e.clientX - r.left + 14, r.width - 290)}px`; tip.style.top = `${e.clientY - r.top + 14}px`; tip.classList.add('on')
+  })
+  stage.addEventListener('mouseleave', () => tip.classList.remove('on'))
+  const d = new Date(); document.getElementById('date').textContent = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} (${'일월화수목금토'[d.getDay()]})`
+  document.getElementById('foot2').textContent = `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}에 불을 켰어요 · 매일 아침 7시에 새로 지어져요 · 인형을 올리면 지금 하는 일이 보여요`
+  const music = document.getElementById('music'), radio = document.getElementById('radio')
+  radio.addEventListener('click', () => { if (music.paused) { music.volume = .55; music.play().catch(() => {}) } else music.pause() })
+  music.addEventListener('play', () => { radio.classList.add('on'); document.getElementById('radioState').textContent = 'ON · 로파이 오피스 잼'; document.getElementById('radioOn').textContent = 'ON' })
+  music.addEventListener('pause', () => { radio.classList.remove('on'); document.getElementById('radioState').textContent = 'OFF · 로파이 오피스 잼'; document.getElementById('radioOn').textContent = 'OFF' })
+  document.getElementById('brand').textContent = `${ORG.owner || '한이룸'} studio`
+})()
+</script>
+</body>
+</html>

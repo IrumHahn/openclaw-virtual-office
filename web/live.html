@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko" data-theme="warm">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>가상 오피스 라이브</title>
+<meta name="description" content="OpenClaw 에이전트 팀이 실제로 돌아다니며 일하는 가상 오피스 시안. 스타일 4종.">
+<link rel="stylesheet" href="office.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1 id="title">가상 오피스 라이브<small id="subtitle">샘플 조직: 이룸의 맥미니 OpenClaw 팀(직원 10명). 컨셉마다 그림체가 완전히 다르고, 직원들은 통로만 따라 걸으며 일하고 · 커피 마시고 · 회의하고 · 총괄에게 결과물을 전달합니다.</small></h1>
+    <div class="ctl" id="ctl">
+      <span class="lab">컨셉</span>
+      <span class="concepts"></span>
+      <span class="lab">속도</span>
+      <button type="button" data-speed="1" aria-pressed="true">보통</button>
+      <button type="button" data-speed="2.2">바쁜 날</button>
+      <button type="button" id="fsBtn" title="무대만 크게">⛶ 전체 화면</button>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="stage" id="stage">
+      <img class="bg" id="bg" src="bg/warm.jpg" alt="" draggable="false">
+      <div class="hud"><b id="hudTitle">한이룸 AI 오피스</b><div class="sub" id="hudSub">직원 10 · 채용 예정 2</div><div class="tag" id="hudTag"></div></div>
+      <div class="clock" id="clock">09:41</div>
+      <div id="spots"></div>
+      <div id="actors"></div>
+    </div>
+    <aside class="panel">
+      <div class="card"><h3>지금 이 순간</h3><div class="stats"><div><b id="sWork">0</b><span>작업 중</span></div><div><b id="sMeet">0</b><span>회의·대화</span></div><div><b id="sBreak">0</b><span>휴식</span></div><div><b id="sDone">0</b><span>오늘 완료</span></div></div></div>
+      <div class="card"><h3>직원</h3><ul class="roster" id="roster"></ul></div>
+      <div class="card"><h3>활동 로그</h3><ul class="log" id="log"></ul></div>
+      <div class="card note">이 장면은 <code>virtual-office</code> 스킬이 만드는 화면과 같은 엔진으로 돌아갑니다. 내 팀으로 만들면 직원 이름·역할·말풍선이 내 대시보드 기록으로 바뀌고, 빈 책상의 <b>채용 예정</b>은 내 업무 지도에서 나옵니다.</div>
+    </aside>
+  </div>
+</div>
+<script src="org.js"></script>
+<script src="concepts.js"></script>
+<script src="maps.js"></script>
+<script src="office.js"></script>
+</body>
+</html>
